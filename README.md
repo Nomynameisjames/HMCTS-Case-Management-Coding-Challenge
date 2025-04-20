@@ -1,1 +1,0 @@
-# HMCTS-Case-Management-Coding-Challenge
