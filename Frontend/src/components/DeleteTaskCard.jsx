@@ -2,7 +2,8 @@
 import {
     Box, Tooltip, IconButton, Menu, MenuButton,
     MenuList, MenuItem, CardHeader, Heading, Card,
-    CardBody, HStack, Badge, CardFooter, Text, Flex
+    CardBody, HStack, Badge, CardFooter, Text, Flex,
+    useColorModeValue
   } from "@chakra-ui/react";
   import { SlOptions } from "react-icons/sl";
   import { MdPending } from "react-icons/md";
@@ -42,7 +43,7 @@ import {
           </Box>
         }
       >
-        <Card w="full" maxW="md" overflow="hidden" shadow="lg" rounded="xl" bg="gray.900" position="relative">
+        <Card w="full" maxW="md" overflow="hidden" shadow="lg" rounded="xl" bg={useColorModeValue("gray.100", "gray.800")} position="relative">
           {/* DropDown Menu for actions (Restore Task) */}
           <Box position="absolute" top="2" right="2">
             <Menu>
