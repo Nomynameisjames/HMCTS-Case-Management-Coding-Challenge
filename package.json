@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --testTimeout=5000",
     "dev": "NODE_ENV=developement node --watch Backend/bin/www",
     "build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend",
     "start": "NODE_ENV=production node Backend/bin/www"
@@ -14,9 +14,17 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "jest": "^29.7.0",
     "mongoose": "^8.13.2",
-    "morgan": "^1.10.0"
+    "supertest": "^7.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "eslint": "^9.25.1",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.0.0"
   }
 }

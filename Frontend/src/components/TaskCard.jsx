@@ -1,242 +1,257 @@
-import React from 'react';
 import {
+  Badge,
   Button,
-  Heading,
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
-  Text,
-  useColorModeValue,
-  ButtonGroup,
+  CardHeader,
+  Checkbox,
   Flex,
-  useToast,
-  HStack,
-  VStack,
-  Input,
-  Select,
-  Badge,
-  Modal,
-  useDisclosure,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Textarea,
   FormControl,
   FormLabel,
+  Heading,
+  HStack,
   Icon,
-  Checkbox
-} from '@chakra-ui/react';
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  Textarea,
+  useColorModeValue,
+  useDisclosure,
+  VStack
+} from "@chakra-ui/react";
+import { useRef, useState } from "react";
+import { MdCalendarToday, MdDescription, MdOutlineCheckCircle, MdPending } from "react-icons/md";
+import { RiCloseLargeFill, RiDeleteBinFill } from "react-icons/ri";
+import useTaskFunc from "../hooks/useFetch";
 
+/**
+ * TaskCard component
+ * __________________
+ * This displays a single task's details in a card format.
+ * It details a functionality to view/edit task details, delete a task, and display a warning before deletion.
+ * Uses modals for delete and edit functionalities, and provides an overdue indication with a background image.
+ * 
+ * Core Features:
+ * 1. Task title, description, and due date display.
+ * 2. Status badge with dynamic color.
+ * 3. Option to delete the task with confirmation modal.
+ * 4. Option to edit the task details in a separate modal.
+ * 
+ * Props:
+ * - task: Contains the details of the task to display.
+ * - setRecentlyDeleted: Function to update the recently deleted tasks.
+ * - setDeletedCount: Function to update the count of deleted tasks.
+ * - setAnimationCoords: Function to set animation coordinates for deleted tasks.
+ * - setShowAnimation: Function to control the visibility of the delete animation.
+ */
 
-import { RiDeleteBinFill, RiEdit2Fill, RiCloseLargeFill  } from "react-icons/ri";
-import { IoMdCloseCircle } from "react-icons/io";
-import { MdPending, MdDescription,  MdOutlineCheckCircle, MdCalendarToday } from "react-icons/md";
-
-import Tasks from "../store/tempTaskDB";
-import { useState } from 'react';
-
-
-
-const TaskCard = ({ task }) => {
-  const imageBg = "https://img.freepik.com/premium-psd/photorealistic-cobweb_926121-1930.jpg?w=826"
-
-  const { deleteTask, updateTask } = Tasks();
-  const [editedTask, setEditedTask] = useState(task);
-  const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isViewOpen,
-    onOpen: onViewOpen,
-    onClose: onViewClose
-  } = useDisclosure();
-  const handleCardClick = () => {
-    onViewOpen();
-  };
-
-  const handleSaveChanges = async (id, taskInfo) => {
-
-   const {success, message} =  await updateTask(id, taskInfo);
-    // You can call your updateTask logic here with `editedTask`
-    onViewClose();
-    if (!success) {
-      toast({
-        title: "Task Update Failed",
-        description: "Changes failed to implement",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } else {
-      toast({
-        title: "Task Updated",
-        description: " Task Update Successful",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-  const handleDeleteTask = async (id) => {
-    const { success, message } = await deleteTask(id);
-    if (!success) {
-      toast({
-        title: "Error",
-        description: message,
-        status: "error",
-        duration: 5000,
-        isClosable: true
-      }) } 
-      else {
-        toast({
-          title: "Success",
-          description: message,
-          status: "success",
-          duration: 5000,
-          isClosable: true
-        })
-  }
-}
-const isOverdue = (due, status) => {
-  return status === "Pending" && new Date(due) < new Date();
-};
-  const bg = useColorModeValue("gray.100", "gray.900")
-  return (
-    <Card 
-      onClick={handleCardClick}
-      bg={bg}
-      w="full"
-      maxW="md"
-      overflow="hidden"
-      shadow="lg"
-      rounded="lg"
-      bgImage={isOverdue(task.Due, task.Status) ? `${imageBg}` : 'none'}
-      bgSize="cover" // ← this makes it shrink to fit
-      bgPosition="center"
-      bgRepeat="no-repeat"
-      transition='all 0.3s'
-      _hover={{ transform: 'translateY(-5px)', shadow: 'xl'}}
-      >
-       <Flex w="full" justify="flex-end">
-            <Button colorScheme="white" size="sm" variant="ghost" onClick={ (e) => { e.stopPropagation(); onOpen() }}>
-            <RiCloseLargeFill color="white" />
-          </Button>
-        </Flex>
-      <CardHeader>
-        <Heading 
-        size="sm"  
-        fontSize={{ base: "sm", md: "lg" }} 
-        maxW="100%">{task.Title}
-      </Heading>
-      </CardHeader>
-      <CardBody> 
-      <Flex direction="column" justify="space-between" h="100%">
-      <HStack spacing={2} mt={"auto"}>
-        {task.Status === "Pending" ? (
-          <MdPending color="red" />
-      ) : (
-          <MdPending color="green" />
-       )}
-          <Badge size="xs"  variant="plain">{task.Status}</Badge>
-      </HStack>
-      </Flex>
-      </CardBody>
-      <CardFooter gap={1}>
-      <Text mt={2} fontSize="sm" color="gray.500">
-          Due: {new Date(task.Due).toLocaleString(undefined, {
-          dateStyle: 'medium',
-          timeStyle: 'short',
-        })}
-      </Text>
-      </CardFooter>
-      <Modal bg={bg}isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-          <ModalContent>
-            <ModalHeader> Warning!</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Text> You are about to delete this task</Text>
-            </ModalBody>
-            <ModalFooter>
-              <Flex w="full" justify="flex-end">
-                <Button size="md" colorScheme="red" variant="outline" onClick={ () => handleDeleteTask(task._id)}>
-                <RiDeleteBinFill color="red" />
-              </Button>
-            </Flex>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      <Modal isOpen={isViewOpen} onClose={onViewClose} size="lg">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{task.Title}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack spacing={6}>
-            <FormControl>
-              <FormLabel>
-                <HStack spacing={2}>
-                  <Icon as={MdDescription} color="white" />
-                  <Text>Description</Text>
-                </HStack>
-              </FormLabel>
-              <Textarea
-                variant="flushed"
-                size="xl"
-                placeholder="Description ...."
-                value={editedTask.Description}
-                onChange={(e) => setEditedTask({ ...editedTask, Description: e.target.value })}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>
-                <HStack spacing={2}>
-                  <Icon as={MdOutlineCheckCircle} color="white" />
-                  <Text>Status</Text>
-                  <Badge color={ task.Status === "Pending" ? "red.500" : "green.500"}>
-                    {task.Status}
-                  </Badge>
-                </HStack>
-              </FormLabel>
-              <Checkbox
-                variant={"solid"}
-                isChecked={editedTask.Status === "Completed"}
-                onChange={(e) =>
-                  setEditedTask({
-                  ...editedTask,
-                Status: e.target.checked ? "Completed" : "Pending"
-                })
-              }
-                colorScheme="green"
-              >
-              {task.Status === "Pending" ? (<Text> Set as completed</Text>) : (<Text>Set as pending</Text>)}
-              </Checkbox>
-          </FormControl>
-          <FormControl>
-            <FormLabel>
-              <HStack spacing={2}>
-                <Icon as={MdCalendarToday} color="white" />
-                <Text>Due Date</Text>
-              </HStack>
-            </FormLabel>
-            <Input
-              type="datetime-local"
-              value={new Date(editedTask.Due).toISOString().slice(0, 16)}
-              onChange={(e) => setEditedTask({ ...editedTask, Due: new Date(e.target.value) })}
-            />
-          </FormControl>
-        </VStack>
-        </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" onClick={ () => {handleSaveChanges(task._id, editedTask)}}>Save Changes</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Card>
-  );
-};
-
-export default TaskCard;
+ const OVERDUE_IMAGE = "https://img.freepik.com/premium-psd/photorealistic-cobweb_926121-1930.jpg?w=826";
+ const MODAL_SIZE = "lg";
+ const CARD_HOVER_STYLE = {
+   transform: "translateY(-5px)",
+   shadow: "xl"
+ };
+ 
+ const TaskCard = ({ task, setRecentlyDeleted, setDeletedCount, setAnimationCoords, setShowAnimation }) => {
+   const cardRef = useRef(null);
+   const { handleDeleteTask, handleSaveChanges } = useTaskFunc({
+     cardRef,
+     setAnimationCoords,
+     setShowAnimation,
+     setRecentlyDeleted,
+     setDeletedCount,
+   });
+ 
+   const [editedTask, setEditedTask] = useState(task);
+ 
+   // Disclosure for delete and edit modals
+   const {
+     isOpen: isDeleteOpen,
+     onOpen: openDelete,
+     onClose: closeDelete
+   } = useDisclosure();
+ 
+   const {
+     isOpen: isEditOpen,
+     onOpen: openEdit,
+     onClose: closeEdit
+   } = useDisclosure();
+ 
+   const handleCardClick = () => openEdit();
+ 
+   const isOverdue = (due, status) =>
+     status === "Pending" && new Date(due) < new Date();
+ 
+   const bg = useColorModeValue("gray.100", "gray.700");
+   const iconColor = useColorModeValue("black", "white");
+   const overdueBg = isOverdue(task.Due, task.Status) ? OVERDUE_IMAGE : "none";
+ 
+   // handler for form field changes
+   const handleFieldChange = (field, value) => {
+     setEditedTask(prev => ({ ...prev, [field]: value }));
+   };
+ 
+   return (
+     <>
+       <Card
+         ref={cardRef}
+         onClick={handleCardClick}
+         bg={bg}
+         w="full"
+         maxW="md"
+         overflow="hidden"
+         shadow="xl"
+         rounded="lg"
+         bgImage={overdueBg}
+         bgSize="cover"
+         bgPosition="center"
+         bgRepeat="no-repeat"
+         transition="all 0.3s"
+         _hover={CARD_HOVER_STYLE}
+       >
+         <Flex w="full" justify="flex-end">
+           <Button
+             colorScheme="white"
+             size="sm"
+             variant="ghost"
+             onClick={(e) => {
+               e.stopPropagation();
+               openDelete();
+             }}
+           >
+             <RiCloseLargeFill color={iconColor} />
+           </Button>
+         </Flex>
+ 
+         <CardHeader>
+           <Heading size="sm" fontSize={{ base: "sm", md: "lg" }} maxW="100%">
+             {task.Title}
+           </Heading>
+         </CardHeader>
+ 
+         <CardBody>
+           <Flex direction="column" justify="space-between" h="100%">
+             <HStack spacing={2} mt="auto">
+               <MdPending color={task.Status === "Pending" ? "red" : "green"} />
+               <Badge size="xs" variant="plain">{task.Status}</Badge>
+             </HStack>
+           </Flex>
+         </CardBody>
+ 
+         <CardFooter gap={1}>
+           <Text mt={2} fontSize="xs" color={iconColor}>
+             Due: {new Date(task.Due).toLocaleString(undefined, {
+               dateStyle: "medium",
+               timeStyle: "short",
+             })}
+           </Text>
+         </CardFooter>
+ 
+         {/* Delete Confirmation Modal */}
+         <Modal bg={bg} isOpen={isDeleteOpen} onClose={closeDelete}>
+           <ModalOverlay />
+           <ModalContent>
+             <ModalHeader>Warning!</ModalHeader>
+             <ModalCloseButton />
+             <ModalBody>
+               <Text>You are about to delete this task</Text>
+             </ModalBody>
+             <ModalFooter>
+               <Flex w="full" justify="flex-end">
+                 <Button
+                   size="md"
+                   colorScheme="red"
+                   variant="outline"
+                   onClick={() => {
+                     closeDelete();
+                     handleDeleteTask(task._id, task);
+                   }}
+                 >
+                   <RiDeleteBinFill color="red" />
+                 </Button>
+               </Flex>
+             </ModalFooter>
+           </ModalContent>
+         </Modal>
+ 
+         {/* View/Edit Modal */}
+         <Modal isOpen={isEditOpen} onClose={closeEdit} size={MODAL_SIZE}>
+           <ModalOverlay />
+           <ModalContent>
+             <ModalHeader>{task.Title}</ModalHeader>
+             <ModalCloseButton />
+             <ModalBody>
+               <VStack spacing={6}>
+                 <FormControl>
+                   <FormLabel>
+                     <HStack spacing={2}>
+                       <Icon as={MdDescription} color="white" />
+                       <Text>Description</Text>
+                     </HStack>
+                   </FormLabel>
+                   <Textarea
+                     variant="flushed"
+                     size="xl"
+                     placeholder="Description ...."
+                     value={editedTask.Description}
+                     onChange={(e) => handleFieldChange("Description", e.target.value)}
+                   />
+                 </FormControl>
+ 
+                 <FormControl>
+                   <FormLabel>
+                     <HStack spacing={2}>
+                       <Icon as={MdOutlineCheckCircle} color="white" />
+                       <Text>Status</Text>
+                       <Badge color={task.Status === "Pending" ? "red.500" : "green.500"}>
+                         {task.Status}
+                       </Badge>
+                     </HStack>
+                   </FormLabel>
+                   <Checkbox
+                     isChecked={editedTask.Status === "Completed"}
+                     onChange={(e) => handleFieldChange("Status", e.target.checked ? "Completed" : "Pending")}
+                     colorScheme="green"
+                   >
+                     {task.Status === "Pending" ? "Set as completed" : "Set as pending"}
+                   </Checkbox>
+                 </FormControl>
+ 
+                 <FormControl>
+                   <FormLabel>
+                     <HStack spacing={2}>
+                       <Icon as={MdCalendarToday} color="white" />
+                       <Text>Due Date</Text>
+                     </HStack>
+                   </FormLabel>
+                   <Input
+                     type="datetime-local"
+                     value={new Date(editedTask.Due).toISOString().slice(0, 16)}
+                     onChange={(e) => handleFieldChange("Due", new Date(e.target.value))}
+                   />
+                 </FormControl>
+               </VStack>
+             </ModalBody>
+             <ModalFooter>
+               <Button
+                 colorScheme="blue"
+                 onClick={() => handleSaveChanges(task._id, editedTask, closeEdit)}
+               >
+                 Save Changes
+               </Button>
+             </ModalFooter>
+           </ModalContent>
+         </Modal>
+       </Card>
+     </>
+   );
+ };
+ 
+ export default TaskCard;

@@ -6,7 +6,7 @@
 import app from '../app.js';
 import debugLib from 'debug';
 import http from 'http';
-import { connectDB } from '../config/database.js';
+import connectDB  from '../config/database.js';
 
 
 const debug = debugLib('getting-started-with-expressjs:server');
