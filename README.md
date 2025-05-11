@@ -3,6 +3,13 @@
 HMCTS Task Management System
 
 A modern task management web application built with Express, React, Chakra UI, Zustand, and Framer Motion.
+## Live Demo
+
+Try out the deployed version here:
+
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://hmcts-case-management-coding-challenge.onrender.com/)
+
+
 ## Features
 
 - Light/dark mode toggle
@@ -87,11 +94,4 @@ To run tests, run the following command
 ```bash
   npm run test
 ```
-
-
-## Live Demo
-
-Try out the deployed version here:
-
-[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://hmcts-case-management-coding-challenge.onrender.com/)
 
