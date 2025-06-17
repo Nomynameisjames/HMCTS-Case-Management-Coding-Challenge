@@ -7,7 +7,7 @@ import { getAllTasks,
         emptyBin,
         getDeletedTasks,
         restoreTask
-     } from '../controllers/taskController.js';
+     } from '../../controllers/taskController.js';
 
 // Initialize the router
 const router = express.Router();

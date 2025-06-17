@@ -14,7 +14,7 @@ const Tasks = create((set) => ({
         if (!newTask.Title || !newTask.Due) {
             return ({ success: false, message: "Please fill in a title and set a due date"});
         }
-        const res = await fetch("/api/tasks", {
+        const res = await fetch("/api/v1/tasks", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -29,7 +29,7 @@ const Tasks = create((set) => ({
     fetchTasks: async () => {
         set({ loading: true });
         try {
-          const res = await fetch("/api/tasks");
+          const res = await fetch("/api/v1/tasks");
           if (!res.ok) {
             const text = await res.text();
             throw new Error(text || "Failed to fetch tasks");
@@ -46,7 +46,7 @@ const Tasks = create((set) => ({
         }
       },
     softDeleteTask: async (id) => {
-        const res = await fetch(`/api/tasks/${id}`, {
+        const res = await fetch(`/api/v1/tasks/${id}`, {
             method: "DELETE"
         })
         const data = await res.json();
@@ -57,7 +57,7 @@ const Tasks = create((set) => ({
      return({ success: true, message: data.msg});
     },
     emptyBin: async () => {
-        const res = await fetch(`/api/tasks/bin`, {
+        const res = await fetch(`/api/v1/tasks/bin`, {
             method: "DELETE"
         })
         const data = await res.json();
@@ -68,7 +68,7 @@ const Tasks = create((set) => ({
      return({ success: true, message: data.msg});
     },
     updateTask: async (id, taskInfo) => {
-        const res = await fetch(`/api/tasks/${id}`, {
+        const res = await fetch(`/api/v1/tasks/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -86,7 +86,7 @@ const Tasks = create((set) => ({
     viewDeletedTask: async () => {
         //set({ loading: true });
         try {
-        const res = await fetch('/api/tasks/bin')
+        const res = await fetch('/api/v1/tasks/bin')
         const data = await res.json()
         set({ binTasks: data.msg === 'Bin is empty' ? [] : data.data });
     }
@@ -95,7 +95,7 @@ const Tasks = create((set) => ({
         } 
     },
     restoreDeletedTask: async (id, taskInfo) => {
-        const res = await fetch(`/api/tasks/restore/${id}`, {
+        const res = await fetch(`/api/v1/tasks/restore/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"

@@ -2,7 +2,7 @@ import path from 'path';
 import url from 'url';
 import express from 'express';
 import logger from 'morgan';
-import indexRouter from './routes/index.js';
+import indexRouter from './routes/v1/index.js';
 import { errorHandler, pagenotFound } from './middleware/errorHandler.js';
 
 // Initialize Express app
@@ -32,7 +32,7 @@ app.use(logger('dev'));
 app.use(express.json());
 
 // Use the task routes under /api/tasks
-app.use('/api/tasks', indexRouter);
+app.use('/api/v1/tasks', indexRouter);
 
 // Handle 404 errors for unmatched routes
 app.use(pagenotFound);
