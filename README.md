@@ -99,4 +99,4 @@ To run tests, run the following command
 
 You can find a comprehensive guide for the API documentation at the link below
 
-[![API Documentation](https://documenter.getpostman.com/view/25617595/2sB2x8GCB2)
+**[View API Documentation](https://documenter.getpostman.com/view/25617595/2sB2x8GCB2)**
